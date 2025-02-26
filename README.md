@@ -10,6 +10,7 @@ Each tutorial is available as an HTML, PDF, and RMD file.
 
 We will cover these topics:
 
+* Refresher to R syntax and usage
 * Creating graphics using the ggplot2 library 
 * Principal Component Analysis (PCA)
 * Species Accumulation Curves (SAC)
