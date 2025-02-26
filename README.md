@@ -12,6 +12,7 @@ We will cover these topics:
 
 * Creating graphics using the ggplot2 library 
 * Principal Component Analysis (PCA)
+* Species Accumulation Curves (SAC)
 * Linear models (LM)
 * Generalized Linear Models (GLM)
 
