@@ -15,6 +15,6 @@ We will cover these topics:
 * Linear models (LM)
 * Generalized Linear Models (GLM)
 
-All the lecture slides and datasets are in the **slides/** and **datasets/** folders, respectively.
+All the lecture slides and datasets are in the **slides/** and **data/** folders, respectively.
 
 Feel free to email me at **vsteenderen@gmail.com** or **clarke.vansteenderen@ru.ac.za** for any questions or concerns.
