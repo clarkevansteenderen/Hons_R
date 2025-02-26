@@ -2,7 +2,11 @@
 title: "Basic ggplots in R"
 author: "Clarke van Steenderen"
 date: "2025-02"
-output: pdf_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
@@ -20,7 +24,7 @@ Check the R [dataset](https://stat.ethz.ch/R-manual/R-devel/library/datasets/htm
 * **package_name::** specifies the package name, where the two colons access all the functions associated with that package
 * Hashes (#) denote comments, that are not read by R. Use these to annotate your code
 * In ggplot, the plus sign (+) means that you are adding additional "layers" to your plot
-* An equal sign (=) is synonymous with the arrow (->). You can use either to assign names to objects
+* An equal sign (=) is synonymous with the arrow (<-). You can use either to assign names to objects
 * Dollar signs ($) are like keys that access features of an object, such as columns or lists
 * Use a question mark (?) to access the help file for a particular package (e.g. **?ggplot**)
 
