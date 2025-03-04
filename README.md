@@ -6,7 +6,7 @@ Welcome to the Honours tutorials for R!
 
 To download this repository, go to **"Code"** ➡️ **"Download Zip"**.
 
-Each tutorial is available as an HTML, PDF, and RMD file.
+Each tutorial is available as an HTML and RMD file.
 
 We will cover these topics:
 
