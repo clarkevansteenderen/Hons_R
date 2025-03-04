@@ -2,14 +2,18 @@
 title: "Basic Linear Models in R"
 author: "Clarke van Steenderen"
 date: "2025-02"
-output: pdf_document
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
 ---
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE, out.width="60%"}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R tutorial 4: Running Linear Models
+## Running Linear Models in R
 
 A linear model is used when one wants to investigate the relationship between predictor variables (x) (e.g. body mass, temperature, humidity) and a continuous response variable (y) (e.g. fecundity, longevity, height). It assumes a linear relationship, and can be used to make predictions (i.e. can x be used to predict y?). When the response variable takes the form of a binomial value (e.g. dead or alive, 1 or 0), or count, for example, then a generalised linear model (GLM) is appropriate as this method can handle data with non-normal error distributions and variances. 
 
@@ -23,6 +27,8 @@ pacman::p_load(xlsx, janitor, ggplot2, Rmisc, dplyr, tidyverse, effectsl)
 
 # read in the data
 in.data = readxl::read_excel("data/poisson_data.xlsx")
+# or as a csv file
+in.data = read.csv("data/poisson_data.csv")
 
 str(in.data)
 
@@ -97,13 +103,18 @@ plot(linmod1, which = 2)
 resids = resid(linmod1) 
 resids.df = as.data.frame(resids)
 
+resids.mean = mean(resids.df$resids)
+
 # plot a histogram -> appears that the resids are not normally distributed
 hist(resids)
 
 ggplot2::ggplot(data = resids.df, aes(y = resids)) +
   #geom_histogram() +
   geom_density() +
-  coord_flip()
+  coord_flip() + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray") +
+  geom_hline(yintercept = resids.mean, linetype = "dashed", color = "darkred")
 
 # have a look at the homogeneity of variance
 # ideally, the red line should lie on the y = 0 axis line, and there should be
@@ -119,7 +130,7 @@ DHARMa::simulateResiduals(linmod1, n = 1000, plot = TRUE)
 
 ```
 
-There appears to be equality of variance, and the DHARMa QQ plot suggests normality of the residuals. We could explore a GLM at this point, but for the sake of running a LM, let's continue:
+There appears to be equality of variance (even though the residual histogram showed some positive skewness), and the DHARMa QQ plot suggests normality of the residuals. We could explore a GLM at this point, but for the sake of running a LM, let's continue:
 
 ```{r, message=FALSE}
 
@@ -265,3 +276,58 @@ ggplot2::ggplot(data = in.data, aes(x = adult_mass, y = larvae)) +
 
 ```
 
+### A note on Chi-square Goodness-of-Fit tests ($\chi^2$)
+
+If you have a frequency table, perhaps with frequencies/counts for different species, then a Chi-square test is appropriate. Ask yourself "does this data have a response and predictor variable?".
+
+For example, perhaps we have this data of counts for some South African birds. Let's run a Chi-square test:
+
+```{r, message=FALSE}
+bird_data = data.frame(
+  species = c(
+    "Cape Sparrow",
+    "Fiscal Shrike",
+    "Cape Robin-Chat",
+    "Southern Masked Weaver",
+    "Hadeda Ibis",
+    "Helmeted Guineafowl"
+  ),
+  frequency = c(15, 12, 9, 8, 8, 6)
+)
+
+bird_data
+
+observed_counts = bird_data$frequency
+# get the mean, and assume that this mean is the expected value across all species
+# i.e. the null hypothesis is that all species are equally likely
+expected_counts = rep(mean(observed_counts), length(observed_counts))  
+
+# Run the chi-square test
+# p is the probability of finding any one of these species under the null hypothesis
+# since we have 6 species here, the probability should be equal for all -> i.e. 1/6
+chisq_test = chisq.test(observed_counts, p = rep(1/length(observed_counts), length(observed_counts)))
+
+# Print test results
+chisq_test
+```
+
+Here, the p-value of 0.36 (> 0.05) means that there is no difference from the null hypothesis -> i.e. the frequencies recorded do not differ significantly from the expected equal distribution. All species are equally as likely to occur.
+
+If we had a different probability expectation, the values for the p argument need to be changed accordingly. E.g. perhaps we know that the Hadeda ibis occurs more frequently than the other birds (maybe 0.25 probability). We could change this:
+
+```{r, message=FALSE}
+
+# 0.75/5 = 0.15 for the remaining birds, assuming that they are all equally as likely to occur
+expected_probs = c(0.15, 0.15, 0.15, 0.15, 0.25, 0.15)
+
+# Run the chi-square test
+# p is the probability of finding any one of these species under the null hypothesis
+# since we have 6 species here, the probability should be equal for all -> i.e. 1/6
+chisq_test = chisq.test(observed_counts, p = expected_probs)
+
+# Print test results
+chisq_test
+
+```
+
+Although the p-value is lower, it is still not significant.

@@ -13,7 +13,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R tutorial 1: Using ggplot to create basic plots
+## Using ggplot to create basic plots
 
 Here, we will use the popular **iris** dataset, collected by Edgar Anderson in 1936, to illustrate how ggplot can be used to create elegant and attractive graphics. It contains sepal and petal measurements for 50 individuals from three *Iris* species; namely *I. setosa*, *I. versicolor*, and *I. virginica*. 
 
@@ -41,12 +41,14 @@ iris_data = janitor::clean_names(iris_data)
 
 # for practice, write this data to the project folder as a .csv file
 write.csv(iris_data, file = "data/iris_data.csv", quote = FALSE, row.names = FALSE)
+
 # now read it back in 
 iris_data_readin = read.csv("data/iris_data.csv")
 
 # now as an Excel file
 xlsx::write.xlsx(iris_data, file = "data/iris_data.xlsx", 
                  sheetName = "iris_data", row.names = FALSE)
+
 iris_data_readin_xlsx = xlsx::read.xlsx(file = "data/iris_data.xlsx", sheetIndex = 1)
 
 # make iris species a factor/grouping variable

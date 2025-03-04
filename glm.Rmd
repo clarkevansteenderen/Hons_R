@@ -33,7 +33,7 @@ Here is a general guide to choosing which statistical test may be best suited fo
 -   A continuous predictor AND counts as response variable -\> GLM with **"Poisson"** or **"Negative binomial"** family (Poisson regression)
 -   A continuous predictor AND proportions as response variable -\> GLM with **"binomial"** family
 -   A categorical predictor AND continuous response variable -\> **ANOVA** (or t-test, if you are just comparing means), which can be also be run as a linear model or GLM. An ANOVA is essentially a LM or a GLM, just with a categorical predictor variable. An ANOVA compares means across groups, and looks at the variance between and within groups. If variance is greater between than within those groups, there is a significant difference between them.
--   A categorical predictor AND counts as response variable -\> **Chi-square** tests
+-   A categorical predictor AND counts as response variable -\> GLM with **"Poisson"** or **"Negative binomial"** family (Poisson regression)
 -   Multiple predictors, with some continuous and some categorical variables -\> linear regression / GLM
 
 A sum-of-squares test is applied when testing for the significance of your parameters. Generally, you would use a:
@@ -94,6 +94,18 @@ plot(daphnia.glm.gaus, which = 2)
 
 daphnia.resids = resid(daphnia.glm.gaus)
 hist(daphnia.resids)
+
+daphnia.resids.df = as.data.frame(daphnia.resids)
+
+daphnia.resids.mean = mean(daphnia.resids.df$daphnia.resids)
+
+ggplot2::ggplot(data = daphnia.resids.df, aes(y = daphnia.resids)) +
+  #geom_histogram() +
+  geom_density() +
+  coord_flip() + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray") +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "gray") +
+  geom_hline(yintercept = daphnia.resids.mean, linetype = "dashed", color = "darkred")
 
 DHARMa::plotQQunif(daphnia.glm.gaus)
 
@@ -590,7 +602,24 @@ ggplot2::ggplot(data = dplyr::filter(preds.spp), aes(x = x, y = predicted)) +
 
 ```
 
-# **Practice exercise 1 [optional]**
+Perhaps we have new biomass and pH categories, and we want to put this into our model to predict species number. Here's how you can do that, using our third GLM (**plant.glm.3**). Below, we create a new data frame with the biomass values and pH categories we want to use to predict the species number. We'll predict for biomass = 20 at pH "mid", and biomass = 25 at pH = "high":
+
+```{r, message = FALSE}
+
+# create data frame with biomass and pH values of interest
+new.data = data.frame(Biomass = c(20, 25), pH = c("mid", "high"))
+# make the prediction, using the third GLM we created
+# type = "response" makes sure that our predicted values are on the original scale (number of species),
+# not on the log scale (used in a Poisson GLM)
+predicted_species = predict(plant.glm.3, newdata = new.data, type = "response")
+
+print(predicted_species)
+
+```
+
+Here, we see that a biomass of 20 at pH "mid" yields ~2 species, and a biomass of 25 at pH "high" yields ~3 species.
+
+# **Practice exercise 1**
 
 The data set **pollinator_abundance_data.csv** contains pollinator abundances on three different flower species, across three seasons (summer, autumn, and winter). Run the appropriate GLM on this data, and have a look at whether:
 
@@ -605,7 +634,7 @@ Additionally, answer the following:
 (3) Do we need to include an interaction term in this model?\
 (4) Which GLM family is appropriate for this data? Provide the relevant model diagnostic plots. (5) Provide box-and-whisker plots to graphically present the data
 
-# **Practice exercise 2 [optional]**
+# **Practice exercise 2**
 
 Have a look at the lung capacity data set from [Kahn 2017](https://www.tandfonline.com/doi/full/10.1080/10691898.2005.11910559), called `lungcap` in the ``GLMsData`` package. 
 
@@ -613,13 +642,13 @@ Have a look at the lung capacity data set from [Kahn 2017](https://www.tandfonli
 (2) Fit some Gaussian GLMs with different predictors and interaction terms, and find a suitable model
 (3) Interpret the results, and suggest reasons for any oddities
 
-# **Practice exercise 3 [optional]**
+# **Practice exercise 3**
 
 Use the `cheese` dataset in the ``GLMsData`` package to find out what makes a winning Cheddar cheese! The data comes from Moore and McCabe (1993).
 
 Find out whether acetic acid, H2S, or lactic acid has an effect on taste scores by running a Gaussian GLM. Does the model fit well? Which ingredient/s had a significant effect on scores?
 
-# **Practice exercise 4 [optional]**
+# **Practice exercise 4**
 
 Use the ``deposit`` dataset in the ``GLMsData`` package to analyse the effect of three different insecticides at different dosages on insect mortality. Which insecticide, at which dosage, was the most effective? What type of GLM is best to use here? 
 
